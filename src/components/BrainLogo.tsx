@@ -1,0 +1,51 @@
+type Props = {
+  size?: number;
+  className?: string;
+};
+
+export default function BrainLogo({ size = 40, className = '' }: Props) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <defs>
+        <radialGradient id="brainGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#c084fc" stopOpacity="0.9" />
+          <stop offset="60%" stopColor="#a855f7" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="brainStroke" x1="0" y1="0" x2="48" y2="48">
+          <stop offset="0%" stopColor="#e9d5ff" />
+          <stop offset="100%" stopColor="#a855f7" />
+        </linearGradient>
+      </defs>
+      <circle cx="24" cy="24" r="22" fill="url(#brainGlow)" />
+      <g stroke="url(#brainStroke)" strokeWidth="1.4" fill="none" strokeLinecap="round">
+        <path d="M24 8 C18 8 14 12 14 18 C14 22 16 24 16 24 C14 26 13 30 16 33 C18 36 21 36 24 36" />
+        <path d="M24 8 C30 8 34 12 34 18 C34 22 32 24 32 24 C34 26 35 30 32 33 C30 36 27 36 24 36" />
+        <path d="M24 8 L24 36" />
+        <path d="M16 18 C19 17 21 18 24 20" />
+        <path d="M32 18 C29 17 27 18 24 20" />
+        <path d="M16 28 C19 27 21 28 24 30" />
+        <path d="M32 28 C29 27 27 28 24 30" />
+      </g>
+      <g fill="#e9d5ff">
+        <circle cx="24" cy="8" r="1.6" />
+        <circle cx="14" cy="18" r="1.4" />
+        <circle cx="34" cy="18" r="1.4" />
+        <circle cx="16" cy="24" r="1.2" />
+        <circle cx="32" cy="24" r="1.2" />
+        <circle cx="16" cy="33" r="1.4" />
+        <circle cx="32" cy="33" r="1.4" />
+        <circle cx="24" cy="36" r="1.6" />
+        <circle cx="24" cy="20" r="1.3" />
+        <circle cx="24" cy="30" r="1.3" />
+      </g>
+    </svg>
+  );
+}
