@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { useStats } from './StatsContext';
 
-const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL';
+const N8N_WEBHOOK_URL = 'https://waqarqayyum250.app.n8n.cloud/webhook/43de6ca2-532c-4728-b586-8789c84cefcb/chat';
 const FIVERR_URL = 'https://www.fiverr.com/conversations/waqarqayyum250';
 
 type Msg = {
