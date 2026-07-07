@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import {
   Zap, Workflow, MessageSquare, Mail, Target, Database,
   ArrowRight, Check, Menu, X, Globe, MapPin, Cpu, Network, Bot, ShieldCheck,
@@ -7,6 +8,7 @@ import BrainLogo from './components/BrainLogo';
 import Dashboard from './components/Dashboard';
 import Chatbot from './components/Chatbot';
 import { StatsProvider, useStats } from './components/StatsContext';
+import Blog from './pages/Blog';
 
 const FIVERR_URL = 'https://www.fiverr.com/conversations/waqarqayyum250';
 
@@ -110,10 +112,11 @@ function Nav() {
   }, []);
 
   const links = [
-    { label: 'Services', href: '#services' },
-    { label: 'Dashboard', href: '#dashboard' },
-    { label: 'Process', href: '#process' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Services', href: '#services', isRoute: false },
+    { label: 'Dashboard', href: '#dashboard', isRoute: false },
+    { label: 'Process', href: '#process', isRoute: false },
+    { label: 'Pricing', href: '#pricing', isRoute: false },
+    { label: 'Blog', href: '/blog', isRoute: true },
   ];
 
   return (
@@ -130,9 +133,15 @@ function Nav() {
 
         <div className="hidden md:flex items-center gap-8">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm text-slate-300 hover:text-violet-300 transition-colors font-medium">
-              {l.label}
-            </a>
+            l.isRoute ? (
+              <Link key={l.href} to={l.href} className="text-sm text-slate-300 hover:text-violet-300 transition-colors font-medium">
+                {l.label}
+              </Link>
+            ) : (
+              <a key={l.href} href={l.href} className="text-sm text-slate-300 hover:text-violet-300 transition-colors font-medium">
+                {l.label}
+              </a>
+            )
           ))}
           <a
             href={FIVERR_URL}
@@ -151,9 +160,15 @@ function Nav() {
       {menuOpen && (
         <div className="md:hidden glass border-t border-violet-500/20 px-6 py-4 space-y-3">
           {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} className="block text-slate-300 hover:text-violet-300 py-2">
-              {l.label}
-            </a>
+            l.isRoute ? (
+              <Link key={l.href} to={l.href} onClick={() => setMenuOpen(false)} className="block text-slate-300 hover:text-violet-300 py-2">
+                {l.label}
+              </Link>
+            ) : (
+              <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} className="block text-slate-300 hover:text-violet-300 py-2">
+                {l.label}
+              </a>
+            )
           ))}
           <a
             href={FIVERR_URL}
@@ -470,20 +485,28 @@ function Footer() {
   );
 }
 
+function HomePage() {
+  return (
+    <>
+      <Hero />
+      <Services />
+      <Dashboard />
+      <Process />
+      <Pricing />
+      <CTA />
+      <Footer />
+      <Chatbot />
+    </>
+  );
+}
+
 export default function App() {
   return (
-    <StatsProvider>
-      <div className="min-h-screen bg-ink-950 text-slate-200 overflow-x-hidden">
-        <Nav />
-        <Hero />
-        <Services />
-        <Dashboard />
-        <Process />
-        <Pricing />
-        <CTA />
-        <Footer />
-        <Chatbot />
-      </div>
-    </StatsProvider>
+    <div className="min-h-screen bg-ink-950 text-slate-200 overflow-x-hidden">
+      <Routes>
+        <Route path="/" element={<><Nav /><HomePage /></>} />
+        <Route path="/blog" element={<Blog />} />
+      </Routes>
+    </div>
   );
 }
