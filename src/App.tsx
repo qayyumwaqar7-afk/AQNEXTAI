@@ -10,7 +10,7 @@ import Chatbot from './components/Chatbot';
 import { StatsProvider, useStats } from './components/StatsContext';
 import Blog from './pages/Blog';
 
-const FIVERR_URL = 'https://www.fiverr.com/conversations/waqarqayyum250';
+const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
 
 function useFiverrClick() {
   const { bumpStats } = useStats();

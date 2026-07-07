@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Users, ShoppingCart, TrendingUp, Activity, ArrowUpRight } from 'lucide-react';
 import { useStats } from './StatsContext';
 
-const FIVERR_URL = 'https://www.fiverr.com/conversations/waqarqayyum250';
+const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
 
 function useCountUp(target: number, duration = 2000, start = false) {
   const [value, setValue] = useState(0);
