@@ -43,10 +43,10 @@ export default function Blog() {
             </div>
           </header>
 
-          <div className="glass border border-violet-500/20 rounded-2xl overflow-hidden mb-12">
+          <div className="glass border border-violet-500/20 rounded-2xl overflow-hidden mb-12 shadow-glow">
             <img
-              src="https://images.pexels.com/photos/1396439746224-f7b23c886c37?w=800"
-              alt="Real estate AI automation"
+              src="https://images.unsplash.com/photo-1486312338219-ce68d2a6faab?w=1200&q=80"
+              alt="Modern technology workspace with AI automation"
               className="w-full h-64 md:h-80 object-cover"
               itemProp="image"
               loading="eager"
