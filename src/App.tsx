@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   Zap, Workflow, MessageSquare, Mail, Target, Database,
   ArrowRight, Check, Menu, X, Globe, MapPin, Cpu, Network, Bot, ShieldCheck,
@@ -7,7 +7,11 @@ import {
 import BrainLogo from './components/BrainLogo';
 import Dashboard from './components/Dashboard';
 import Chatbot from './components/Chatbot';
-import { StatsProvider, useStats } from './components/StatsContext';
+import Auth from './components/Auth';
+import Setup from './components/Setup';
+import DashboardPage from './components/DashboardPage';
+import { useStats } from './components/StatsContext';
+import { useAuth } from './components/AuthContext';
 import Blog from './pages/Blog';
 
 const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
@@ -104,6 +108,8 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const onFiverr = useFiverrClick();
+  const { session, profile } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -118,6 +124,40 @@ function Nav() {
     { label: 'Pricing', href: '#pricing', isRoute: false },
     { label: 'Blog', href: '/blog', isRoute: true },
   ];
+
+  const authButton = session ? (
+    <button
+      onClick={() => navigate(profile ? '/portal' : '/setup')}
+      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300"
+    >
+      My Dashboard
+    </button>
+  ) : (
+    <a
+      href={FIVERR_URL}
+      onClick={onFiverr}
+      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300"
+    >
+      Get Started
+    </a>
+  );
+
+  const authButtonMobile = session ? (
+    <button
+      onClick={() => { navigate(profile ? '/portal' : '/setup'); setMenuOpen(false); }}
+      className="block text-center px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold"
+    >
+      My Dashboard
+    </button>
+  ) : (
+    <a
+      href={FIVERR_URL}
+      onClick={(e) => { onFiverr(e); setMenuOpen(false); }}
+      className="block text-center px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold"
+    >
+      Get Started
+    </a>
+  );
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${scrolled ? 'glass border-b border-violet-500/20 py-3' : 'py-5'}`}>
@@ -143,13 +183,7 @@ function Nav() {
               </a>
             )
           ))}
-          <a
-            href={FIVERR_URL}
-            onClick={onFiverr}
-            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300"
-          >
-            Get Started
-          </a>
+          {authButton}
         </div>
 
         <button onClick={() => setMenuOpen((o) => !o)} className="md:hidden text-white">
@@ -170,13 +204,7 @@ function Nav() {
               </a>
             )
           ))}
-          <a
-            href={FIVERR_URL}
-            onClick={(e) => { onFiverr(e); setMenuOpen(false); }}
-            className="block text-center px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold"
-          >
-            Get Started
-          </a>
+          {authButtonMobile}
         </div>
       )}
     </nav>
@@ -500,12 +528,30 @@ function HomePage() {
   );
 }
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading, needsSetup } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!session) return <Navigate to="/login" replace />;
+  if (needsSetup) return <Navigate to="/setup" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <div className="min-h-screen bg-ink-950 text-slate-200 overflow-x-hidden">
       <Routes>
         <Route path="/" element={<><Nav /><HomePage /></>} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/signup" element={<Auth />} />
+        <Route path="/setup" element={<ProtectedRoute><Setup /></ProtectedRoute>} />
+        <Route path="/portal" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       </Routes>
     </div>
   );
