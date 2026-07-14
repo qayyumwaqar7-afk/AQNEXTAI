@@ -12,16 +12,26 @@ import Setup from './components/Setup';
 import DashboardPage from './components/DashboardPage';
 import { useStats } from './components/StatsContext';
 import { useAuth } from './components/AuthContext';
+import { FIVERR_INBOX, FIVERR_GIG } from './lib/supabase';
 import Blog from './pages/Blog';
 
-const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
+const FIVERR_URL = FIVERR_INBOX;
+
+function useTrialAware() {
+  const { profile } = useAuth();
+  const trialExpired = profile
+    ? Date.now() - new Date(profile.created_at).getTime() > 3 * 24 * 60 * 60 * 1000
+    : false;
+  return { trialExpired, fiverrUrl: trialExpired ? FIVERR_GIG : FIVERR_INBOX };
+}
 
 function useFiverrClick() {
   const { bumpStats } = useStats();
+  const { fiverrUrl } = useTrialAware();
   return (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     bumpStats();
-    setTimeout(() => window.open(FIVERR_URL, '_blank', 'noopener,noreferrer'), 300);
+    setTimeout(() => window.open(fiverrUrl, '_blank', 'noopener,noreferrer'), 300);
   };
 }
 
@@ -107,7 +117,6 @@ const workflowSteps = [
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const onFiverr = useFiverrClick();
   const { session, profile } = useAuth();
   const navigate = useNavigate();
 
@@ -133,13 +142,12 @@ function Nav() {
       My Dashboard
     </button>
   ) : (
-    <a
-      href={FIVERR_URL}
-      onClick={onFiverr}
+    <button
+      onClick={() => navigate('/signup')}
       className="px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300"
     >
-      Get Started
-    </a>
+      Start 3-Day Free Trial
+    </button>
   );
 
   const authButtonMobile = session ? (
@@ -150,13 +158,12 @@ function Nav() {
       My Dashboard
     </button>
   ) : (
-    <a
-      href={FIVERR_URL}
-      onClick={(e) => { onFiverr(e); setMenuOpen(false); }}
+    <button
+      onClick={() => { navigate('/signup'); setMenuOpen(false); }}
       className="block text-center px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold"
     >
-      Get Started
-    </a>
+      Start 3-Day Free Trial
+    </button>
   );
 
   return (
@@ -211,8 +218,25 @@ function Nav() {
   );
 }
 
+const trialHighlights = [
+  { emoji: '🔒', text: 'Secure Sign Up & Login Required' },
+  { emoji: '🤖', text: '3 Days 100% Free AI Chatbot Integration for your Business' },
+  { emoji: '📱', text: 'Automate WhatsApp, Messenger & Instagram Auto-Replies' },
+  { emoji: '📈', text: 'Boost Your Wholesale Orders and Save Customer Leads' },
+];
+
 function Hero() {
-  const onFiverr = useFiverrClick();
+  const { session, profile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleTrialClick = () => {
+    if (session) {
+      navigate(profile ? '/portal' : '/setup');
+    } else {
+      navigate('/signup');
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 pt-32 pb-20 grid-bg overflow-hidden">
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px] animate-pulse-slow" />
@@ -228,14 +252,13 @@ function Hero() {
           We design and deploy intelligent AI automation systems — lead generation, CRM workflows, and support bots — that run your business while you sleep.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href={FIVERR_URL}
-            onClick={onFiverr}
+          <button
+            onClick={handleTrialClick}
             className="group px-8 py-4 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold text-lg shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2"
           >
-            Secure Order on Fiverr
+            Start 3-Day Free Trial
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </a>
+          </button>
           <a
             href="#services"
             className="px-8 py-4 rounded-full border border-violet-500/30 text-slate-200 font-semibold text-lg hover:border-violet-500/60 hover:bg-violet-500/5 transition-all duration-300"
@@ -244,7 +267,35 @@ function Hero() {
           </a>
         </div>
 
-        <div className="mt-20 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-slate-500">
+        {/* Free Trial Highlights Box */}
+        <div className="mt-12 max-w-3xl mx-auto glass border border-violet-500/25 rounded-2xl p-8 md:p-10 text-left relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-48 h-48 bg-violet-600/15 rounded-full blur-3xl" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                FREE TRIAL ACTIVE
+              </span>
+              <span className="text-slate-500 text-xs font-medium">No credit card required</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {trialHighlights.map((item) => (
+                <div
+                  key={item.text}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-ink-900/40 border border-violet-500/10 hover:border-violet-500/30 transition-all duration-300"
+                >
+                  <span className="text-2xl flex-shrink-0">{item.emoji}</span>
+                  <span className="text-sm text-slate-200 font-medium leading-snug pt-0.5">{item.text}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-xs text-slate-500 leading-relaxed">
+              Sign up with your email, complete a quick setup, and get your custom AI chatbot live for 3 full days — completely free.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 text-slate-500">
           <div className="flex items-center gap-2 text-sm"><Globe className="w-4 h-4 text-violet-400" /> 14+ Active Clients</div>
           <div className="flex items-center gap-2 text-sm"><Zap className="w-4 h-4 text-violet-400" /> 89+ Orders This Month</div>
           <div className="flex items-center gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-violet-400" /> 99.7% Uptime</div>
@@ -340,6 +391,9 @@ function Process() {
 
 function Pricing() {
   const onFiverr = useFiverrClick();
+  const { session, profile } = useAuth();
+  const navigate = useNavigate();
+  const { trialExpired } = useTrialAware();
   return (
     <section id="pricing" className="py-24 px-6 relative">
       <div className="max-w-7xl mx-auto">
@@ -410,17 +464,41 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <a
-                href={FIVERR_URL}
-                onClick={onFiverr}
-                className={`block text-center px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 ${
-                  p.popular
-                    ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-glow hover:shadow-glow-lg hover:scale-105'
-                    : 'border border-violet-500/30 text-violet-200 hover:bg-violet-500/10 hover:border-violet-500/60'
-                }`}
-              >
-                {p.cta}
-              </a>
+              {session && !trialExpired ? (
+                <button
+                  onClick={() => navigate(profile ? '/portal' : '/setup')}
+                  className={`block w-full text-center px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 ${
+                    p.popular
+                      ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-glow hover:shadow-glow-lg hover:scale-105'
+                      : 'border border-violet-500/30 text-violet-200 hover:bg-violet-500/10 hover:border-violet-500/60'
+                  }`}
+                >
+                  Go to Dashboard
+                </button>
+              ) : session && trialExpired ? (
+                <a
+                  href={FIVERR_URL}
+                  onClick={onFiverr}
+                  className={`block text-center px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 ${
+                    p.popular
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-glow hover:shadow-glow-lg hover:scale-105'
+                      : 'border border-amber-500/30 text-amber-200 hover:bg-amber-500/10 hover:border-amber-500/60'
+                  }`}
+                >
+                  Upgrade Now
+                </a>
+              ) : (
+                <button
+                  onClick={() => navigate('/signup')}
+                  className={`block w-full text-center px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 ${
+                    p.popular
+                      ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-glow hover:shadow-glow-lg hover:scale-105'
+                      : 'border border-violet-500/30 text-violet-200 hover:bg-violet-500/10 hover:border-violet-500/60'
+                  }`}
+                >
+                  Start 3-Day Free Trial
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -430,7 +508,7 @@ function Pricing() {
 }
 
 function CTA() {
-  const onFiverr = useFiverrClick();
+  const navigate = useNavigate();
   return (
     <section className="py-24 px-6">
       <div className="max-w-4xl mx-auto text-center glass border border-violet-500/30 rounded-3xl p-12 md:p-16 relative overflow-hidden">
@@ -442,15 +520,14 @@ function CTA() {
             Ready to <span className="text-gradient">Automate</span> Your Growth?
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto mb-8">
-            Join 14+ businesses scaling with AQ NEXT AI. Secure your project on Fiverr today.
+            Join 14+ businesses scaling with AQ NEXT AI. Start your 3-day free trial today — no credit card required.
           </p>
-          <a
-            href={FIVERR_URL}
-            onClick={onFiverr}
+          <button
+            onClick={() => navigate('/signup')}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold text-lg shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300"
           >
-            Chat with us on Fiverr <ArrowRight className="w-5 h-5" />
-          </a>
+            Start 3-Day Free Trial <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </section>
