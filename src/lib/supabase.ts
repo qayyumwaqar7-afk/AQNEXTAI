@@ -15,5 +15,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-export const FIVERR_INBOX = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
-export const FIVERR_GIG = 'https://www.fiverr.com/ayeshaqayyum250';
+export const FIVERR_INBOX = 'https://www.fiverr.com/inbox/ayeshaqayyum250';
+export const FIVERR_GIG = 'https://www.fiverr.com/inbox/ayeshaqayyum250';
