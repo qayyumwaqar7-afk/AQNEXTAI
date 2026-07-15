@@ -37,19 +37,6 @@
   }
 }
 
-/* Hide Bolt.new injected badge/watermark */
-#bolt-badge,
-[id*="bolt"],
-[class*="bolt-badge"],
-[class*="bolt-watermark"],
-a[href*="bolt.new"],
-a[href*="stackblitz.com/edit"] {
-  display: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
-
 ::-webkit-scrollbar {
   width: 10px;
 }

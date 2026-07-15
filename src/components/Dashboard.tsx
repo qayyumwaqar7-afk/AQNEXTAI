@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Users, ShoppingCart, TrendingUp, Activity, ArrowUpRight } from 'lucide-react';
-import { useStats } from './StatsContext';
 
-const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
+const FIVERR_URL = 'https://fiverr.com';
 
 function useCountUp(target: number, duration = 2000, start = false) {
   const [value, setValue] = useState(0);
@@ -22,36 +21,6 @@ function useCountUp(target: number, duration = 2000, start = false) {
   return value;
 }
 
-function useSmoothBump(target: number) {
-  const [display, setDisplay] = useState(target);
-  const [popping, setPopping] = useState(false);
-  const prevRef = useRef(target);
-
-  useEffect(() => {
-    if (target === prevRef.current) return;
-    const from = prevRef.current;
-    const diff = target - from;
-    prevRef.current = target;
-    setPopping(true);
-    const t0 = performance.now();
-    let raf = 0;
-    const tick = (t: number) => {
-      const p = Math.min((t - t0) / 600, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setDisplay(Math.round(from + eased * diff));
-      if (p < 1) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        setPopping(false);
-      }
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target]);
-
-  return { display, popping };
-}
-
 const salesData = [42, 58, 51, 67, 74, 69, 82, 91, 88, 96, 104, 112];
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -62,7 +31,6 @@ function StatCard({
   suffix,
   accent,
   live,
-  bump,
 }: {
   icon: typeof Users;
   label: string;
@@ -70,14 +38,9 @@ function StatCard({
   suffix?: string;
   accent: string;
   live?: boolean;
-  bump?: boolean;
 }) {
   const [visible, setVisible] = useState(false);
-  const count = useCountUp(value, 1800, visible && !bump);
-  const { display, popping } = useSmoothBump(value);
-
-  const displayed = bump ? display : count;
-
+  const count = useCountUp(value, 1800, visible);
   return (
     <div
       ref={(el) => {
@@ -103,16 +66,8 @@ function StatCard({
           </span>
         )}
       </div>
-      <div
-        className="text-3xl font-display font-bold tabular-nums transition-all duration-150"
-        style={{
-          color: bump && popping ? '#e879f9' : 'white',
-          transform: bump && popping ? 'scale(1.2)' : 'scale(1)',
-          display: 'inline-block',
-          transformOrigin: 'left center',
-        }}
-      >
-        {displayed.toLocaleString()}
+      <div className="text-3xl font-display font-bold text-white tabular-nums">
+        {count.toLocaleString()}
         {suffix}
       </div>
       <div className="text-sm text-slate-400 mt-1">{label}</div>
@@ -205,7 +160,6 @@ function SalesChart() {
 }
 
 export default function Dashboard() {
-  const { stats } = useStats();
   const [visitors, setVisitors] = useState(48213);
 
   useEffect(() => {
@@ -230,8 +184,8 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
           <StatCard icon={Activity} label="Total Website Visitors" value={visitors} accent="bg-violet-500/15 text-violet-300" live />
-          <StatCard icon={Users} label="Active Clients" value={stats.clients} suffix="+" accent="bg-fuchsia-500/15 text-fuchsia-300" bump />
-          <StatCard icon={ShoppingCart} label="Orders Completed (This Month)" value={stats.orders} suffix="+" accent="bg-indigo-500/15 text-indigo-300" bump />
+          <StatCard icon={Users} label="Active Clients" value={14} suffix="+" accent="bg-fuchsia-500/15 text-fuchsia-300" />
+          <StatCard icon={ShoppingCart} label="Orders Completed (This Month)" value={89} suffix="+" accent="bg-indigo-500/15 text-indigo-300" />
           <StatCard icon={TrendingUp} label="Avg. ROI Delivered" value={312} suffix="%" accent="bg-purple-500/15 text-purple-300" />
         </div>
 

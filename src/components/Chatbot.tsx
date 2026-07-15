@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
-import { useStats } from './StatsContext';
 
-const N8N_WEBHOOK_URL = 'https://waqarqayyum250.app.n8n.cloud/webhook/43de6ca2-532c-4728-b586-8789c84cefcb/chat';
-const FIVERR_URL = 'https://www.fiverr.com/conversations/ayeshaqayyum250';
+const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL';
+const FIVERR_URL = 'https://fiverr.com';
 
 type Msg = {
   role: 'bot' | 'user';
@@ -24,7 +23,6 @@ const PROMPTS: Record<Step, string> = {
 };
 
 export default function Chatbot() {
-  const { bumpStats } = useStats();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -37,12 +35,6 @@ export default function Chatbot() {
   const [sending, setSending] = useState(false);
   const [unread, setUnread] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const handleFiverrClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    bumpStats();
-    setTimeout(() => window.open(FIVERR_URL, '_blank', 'noopener,noreferrer'), 300);
-  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -162,7 +154,8 @@ export default function Chatbot() {
                   {m.showFiverr && (
                     <a
                       href={FIVERR_URL}
-                      onClick={handleFiverrClick}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="mt-3 flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-semibold text-sm shadow-glow hover:shadow-glow-lg hover:scale-[1.02] transition-all duration-300 animate-pulse-slow"
                     >
                       <Sparkles className="w-4 h-4" />
